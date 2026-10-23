@@ -134,10 +134,14 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">رقم واتساب الحجوزات (بدون + وبكود الدولة):</label>
-                <input type="text" id="cfg-whatsapp" placeholder="مثال: 201021021355" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-emerald-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
+                <label class="block text-xs font-bold text-slate-300 mb-1">رقم واتساب الحجوزات (مع كود الدولة):</label>
+                <input type="text" id="cfg-whatsapp" placeholder="مثال: 201000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-emerald-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">رقم الاتصال المعروض (Display Phone):</label>
+                <input type="text" id="cfg-phone-display" placeholder="مثال: 01000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-teal-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">الرمز السري للوحة التحكم (PIN):</label>
@@ -278,11 +282,12 @@
       document.getElementById("cfg-doctor-name").value = currentConfig.doctorName || "";
       document.getElementById("cfg-doctor-title").value = currentConfig.doctorTitle || "";
       document.getElementById("cfg-whatsapp").value = currentConfig.whatsappNumber || "";
+      document.getElementById("cfg-phone-display").value = currentConfig.phoneDisplay || "";
       document.getElementById("cfg-admin-pin").value = currentConfig.adminPin || "";
       document.getElementById("cfg-promo-active").checked = !!currentConfig.promo.active;
       document.getElementById("cfg-promo-text").value = currentConfig.promo.text || "";
 
-      document.getElementById("stat-whatsapp-display").textContent = `+${currentConfig.whatsappNumber}`;
+      document.getElementById("stat-whatsapp-display").textContent = currentConfig.whatsappNumber ? `+${currentConfig.whatsappNumber}` : "+20 100 000 0000";
       document.getElementById("stat-promo-status").textContent = currentConfig.promo.active ? `نشط (${currentConfig.promo.discountPercent || 25}%)` : "معطل";
 
       loadLeads();
@@ -352,6 +357,7 @@
       currentConfig.doctorName = document.getElementById("cfg-doctor-name").value.trim();
       currentConfig.doctorTitle = document.getElementById("cfg-doctor-title").value.trim();
       currentConfig.whatsappNumber = document.getElementById("cfg-whatsapp").value.trim().replace(/[^0-9]/g, '');
+      currentConfig.phoneDisplay = document.getElementById("cfg-phone-display").value.trim();
       currentConfig.adminPin = document.getElementById("cfg-admin-pin").value.trim();
       currentConfig.promo.active = document.getElementById("cfg-promo-active").checked;
       currentConfig.promo.text = document.getElementById("cfg-promo-text").value.trim();

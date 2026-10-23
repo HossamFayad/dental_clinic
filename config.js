@@ -8,9 +8,9 @@ const DEFAULT_CLINIC_CONFIG = {
   doctorName: "د. أحمد فياض",
   doctorTitle: "استشاري جراحة وتجميل الفم والأسنان | عضو الجمعية الألمانية لزراعة الأسنان (DGZI)",
   doctorBio: "خبرة أكثر من 15 عاماً في تصميم ابتسامة هوليوود الرقمية وزراعة الأسنان الفورية بدون ألم. حاصل على زمالة الكلية الملكية للجراحين (إدنبرة - بريطانيا) والماجستير في تجميل الأسنان.",
-  whatsappNumber: "201021021355", // Default WhatsApp phone (international format, no +)
-  phoneDisplay: "01021021355",
-  emergencyPhone: "01123456789",
+  whatsappNumber: "201000000000", // Default Zeroed (Dynamic via Admin Panel)
+  phoneDisplay: "01000000000",   // Default Zeroed (Dynamic via Admin Panel)
+  emergencyPhone: "01000000000",
   workingHours: "السبت - الخميس: 12 ظهراً - 10 مساءً (الجمعة استشارات خاصة)",
   adminPin: "smile2026",
 
@@ -28,14 +28,14 @@ const DEFAULT_CLINIC_CONFIG = {
       name: "فرع التجمع الخامس",
       address: "شارع التسعين الشمالي - مول تريفيوم - الدور الثاني عيادة 204",
       mapLink: "https://maps.google.com/?q=New+Cairo+Trivium",
-      phone: "01021021355"
+      phone: "01000000000"
     },
     {
       id: "zayed",
       name: "فرع الشيخ زايد",
       address: "كابيتال بيزنس بارك - مبنى B4 - الدور الثالث",
       mapLink: "https://maps.google.com/?q=Capital+Business+Park+Sheikh+Zayed",
-      phone: "01021021355"
+      phone: "01000000000"
     }
   ],
 
@@ -186,7 +186,8 @@ function getClinicConfig() {
   try {
     const saved = localStorage.getItem("elite_dental_config");
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      return parsed;
     }
   } catch (e) {
     console.error("Failed to load saved clinic config", e);

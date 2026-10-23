@@ -109,11 +109,11 @@
 
       <!-- Header CTAs -->
       <div class="flex items-center gap-3">
-        <a href="tel:01021021355" class="hidden lg:flex items-center gap-2 text-slate-600 hover:text-navy-900 text-sm font-semibold pl-2">
+        <a id="header-phone-link" href="tel:01000000000" class="hidden lg:flex items-center gap-2 text-slate-600 hover:text-navy-900 text-sm font-semibold pl-2">
           <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-brand-600">
             <i data-lucide="phone-call" class="w-4 h-4"></i>
           </div>
-          <span dir="ltr">010 2102 1355</span>
+          <span id="header-phone-display" dir="ltr">010 0000 0000</span>
         </a>
 
         <button onclick="openBookingModal('كشف عام واستشارة')" class="bg-gradient-to-r from-brand-600 to-accent-cyan hover:from-brand-700 hover:to-teal-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-teal-500/20 hover:shadow-lg transition-all flex items-center gap-2">
@@ -137,7 +137,7 @@
       <a href="#faq" onclick="toggleMobileMenu()" class="block font-semibold text-slate-800 hover:text-brand-600 py-1">الأسئلة الشائعة</a>
       <a href="#branches" onclick="toggleMobileMenu()" class="block font-semibold text-slate-800 hover:text-brand-600 py-1">فروع العيادة</a>
       <div class="pt-2">
-        <a href="https://wa.me/201021021355" target="_blank" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-center flex items-center justify-center gap-2">
+        <a id="mobile-whatsapp-link" href="https://wa.me/201000000000" target="_blank" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-center flex items-center justify-center gap-2">
           <i data-lucide="message-circle" class="w-5 h-5"></i>
           <span>تواصل واتساب فوري</span>
         </a>
@@ -714,7 +714,7 @@
       <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
       <span>د. أحمد متاح للاستشارة الآن</span>
     </div>
-    <a id="floating-whatsapp-btn" href="https://wa.me/201021021355?text=مساء%20الخير%20يا%20دكتور،%20عايز%20استفسر%20عن%20كشف%20الأسنان%20وعروض%20التجميل" target="_blank" class="w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform relative group">
+    <a id="floating-whatsapp-btn" href="https://wa.me/201000000000?text=مساء%20الخير%20يا%20دكتور،%20عايز%20استفسر%20عن%20كشف%20الأسنان%20وعروض%20التجميل" target="_blank" class="w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform relative group">
       <i data-lucide="message-circle" class="w-8 h-8 fill-white"></i>
       <span class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
         1
@@ -797,8 +797,31 @@
       initCalculator();
       initReviews();
       initBranches();
+      syncPhoneNumbers();
       lucide.createIcons();
     });
+
+    function syncPhoneNumbers() {
+      const rawWa = (config.whatsappNumber || "201000000000").replace(/[^0-9]/g, '');
+      const displayPhone = config.phoneDisplay || ("0" + rawWa.replace(/^20/, ''));
+
+      const headerLink = document.getElementById("header-phone-link");
+      if (headerLink) {
+        headerLink.href = `tel:${displayPhone}`;
+        const span = document.getElementById("header-phone-display");
+        if (span) span.textContent = displayPhone;
+      }
+
+      const mobileWa = document.getElementById("mobile-whatsapp-link");
+      if (mobileWa) {
+        mobileWa.href = `https://wa.me/${rawWa}`;
+      }
+
+      const floatWa = document.getElementById("floating-whatsapp-btn");
+      if (floatWa) {
+        floatWa.href = `https://wa.me/${rawWa}?text=${encodeURIComponent("مساء الخير يا دكتور، عايز استفسر عن كشف الأسنان وعروض التجميل")}`;
+      }
+    }
 
     function toggleMobileMenu() {
       document.getElementById("mobile-menu").classList.toggle("hidden");
