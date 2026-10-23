@@ -20,7 +20,7 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen">
 
   <!-- ========================================== -->
-  <!-- PIN Protection Screen -->
+  <!-- PIN Protection Screen with Brute-Force Lockout -->
   <!-- ========================================== -->
   <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl max-w-sm w-full text-center space-y-6 shadow-2xl">
@@ -32,8 +32,13 @@
         <p class="text-xs text-slate-400 mt-1">أدخل الرمز السري الخاص بالمدير للوصول</p>
       </div>
       <form onsubmit="handleLogin(event)" class="space-y-4">
-        <input type="password" id="pin-input" placeholder="الرمز السري (الافتراضي: smile2026)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-teal-400 font-bold focus:ring-2 focus:ring-teal-500 focus:outline-none">
-        <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg">
+        <input type="password" id="pin-input" placeholder="الرمز السري (smile2026)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-teal-400 font-bold focus:ring-2 focus:ring-teal-500 focus:outline-none">
+        
+        <div id="lockout-msg" class="hidden text-xs text-rose-400 font-bold bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20">
+          تم قفل الإدخال مؤقتاً لتكرار المحاولات الخاطئة. انتظر <span id="lockout-timer">30</span> ثانية.
+        </div>
+
+        <button type="submit" id="login-btn" class="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg">
           تسجيل الدخول
         </button>
       </form>
@@ -202,17 +207,64 @@
 
   <script>
     let currentConfig = window.ClinicConfig;
+    let failedAttempts = 0;
+    let isLockedOut = false;
+
+    // Simple HTML Escaping helper to prevent XSS
+    function escapeHtml(str) {
+      if (!str) return "";
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
 
     function handleLogin(e) {
       e.preventDefault();
+      if (isLockedOut) return;
+
       const enteredPin = document.getElementById("pin-input").value.trim();
       if (enteredPin === currentConfig.adminPin) {
+        failedAttempts = 0;
         document.getElementById("login-screen").classList.add("hidden");
         document.getElementById("admin-dashboard").classList.remove("hidden");
         initDashboard();
       } else {
-        alert("الرمز السري غير صحيح! يرجى التأكد والمحاولة مرة أخرى.");
+        failedAttempts++;
+        if (failedAttempts >= 5) {
+          triggerLockout();
+        } else {
+          alert(`الرمز السري غير صحيح! المتبقي: ${5 - failedAttempts} محاولات.`);
+        }
       }
+    }
+
+    function triggerLockout() {
+      isLockedOut = true;
+      let remaining = 30;
+      const lockoutMsg = document.getElementById("lockout-msg");
+      const lockoutTimer = document.getElementById("lockout-timer");
+      const loginBtn = document.getElementById("login-btn");
+      const pinInput = document.getElementById("pin-input");
+
+      lockoutMsg.classList.remove("hidden");
+      loginBtn.disabled = true;
+      loginBtn.classList.add("opacity-50", "cursor-not-allowed");
+      pinInput.disabled = true;
+
+      const interval = setInterval(() => {
+        remaining--;
+        lockoutTimer.textContent = remaining;
+        if (remaining <= 0) {
+          clearInterval(interval);
+          isLockedOut = false;
+          failedAttempts = 0;
+          lockoutMsg.classList.add("hidden");
+          loginBtn.disabled = false;
+          loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          pinInput.disabled = false;
+          pinInput.value = "";
+        }
+      }, 1000);
     }
 
     function logout() {
@@ -222,16 +274,14 @@
     }
 
     function initDashboard() {
-      // Fill Form
-      document.getElementById("cfg-clinic-name").value = currentConfig.clinicNameAr;
-      document.getElementById("cfg-doctor-name").value = currentConfig.doctorName;
-      document.getElementById("cfg-doctor-title").value = currentConfig.doctorTitle;
-      document.getElementById("cfg-whatsapp").value = currentConfig.whatsappNumber;
-      document.getElementById("cfg-admin-pin").value = currentConfig.adminPin;
-      document.getElementById("cfg-promo-active").checked = currentConfig.promo.active;
-      document.getElementById("cfg-promo-text").value = currentConfig.promo.text;
+      document.getElementById("cfg-clinic-name").value = currentConfig.clinicNameAr || "";
+      document.getElementById("cfg-doctor-name").value = currentConfig.doctorName || "";
+      document.getElementById("cfg-doctor-title").value = currentConfig.doctorTitle || "";
+      document.getElementById("cfg-whatsapp").value = currentConfig.whatsappNumber || "";
+      document.getElementById("cfg-admin-pin").value = currentConfig.adminPin || "";
+      document.getElementById("cfg-promo-active").checked = !!currentConfig.promo.active;
+      document.getElementById("cfg-promo-text").value = currentConfig.promo.text || "";
 
-      // Stats
       document.getElementById("stat-whatsapp-display").textContent = `+${currentConfig.whatsappNumber}`;
       document.getElementById("stat-promo-status").textContent = currentConfig.promo.active ? `نشط (${currentConfig.promo.discountPercent || 25}%)` : "معطل";
 
@@ -240,7 +290,12 @@
     }
 
     function loadLeads() {
-      const leads = JSON.parse(localStorage.getItem("elite_dental_leads") || "[]");
+      let leads = [];
+      try {
+        leads = JSON.parse(localStorage.getItem("elite_dental_leads") || "[]");
+      } catch (e) {
+        leads = [];
+      }
       document.getElementById("stat-leads-count").textContent = leads.length;
 
       const container = document.getElementById("leads-list-container");
@@ -254,24 +309,34 @@
         return;
       }
 
-      container.innerHTML = leads.map(l => `
-        <div class="bg-slate-900 p-4 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex justify-between items-center">
-            <strong class="text-sm font-black text-white">${l.name}</strong>
-            <span class="text-[10px] text-slate-400">${l.date}</span>
+      container.innerHTML = leads.map(l => {
+        const safeName = escapeHtml(l.name);
+        const safePhone = escapeHtml(l.phone);
+        const safeTreatment = escapeHtml(l.treatment);
+        const safeBranch = escapeHtml(l.branch);
+        const safeDate = escapeHtml(l.date);
+        const safeTime = escapeHtml(l.time);
+        const cleanPhone = (l.phone || "").replace(/[^0-9]/g, '');
+
+        return `
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-700/80 space-y-2">
+            <div class="flex justify-between items-center">
+              <strong class="text-sm font-black text-white">${safeName}</strong>
+              <span class="text-[10px] text-slate-400">${safeDate}</span>
+            </div>
+            <div class="text-xs text-teal-400 font-semibold">${safeTreatment} - ${safeBranch}</div>
+            <div class="text-xs text-slate-300">الموعد المطلوب: ${safeTime || 'غير محدد'}</div>
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-800 text-xs">
+              <a href="https://wa.me/${cleanPhone}" target="_blank" class="flex-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white py-1.5 rounded-lg text-center font-bold transition-colors">
+                فتح الواتساب
+              </a>
+              <a href="tel:${cleanPhone}" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-bold">
+                اتصال
+              </a>
+            </div>
           </div>
-          <div class="text-xs text-teal-400 font-semibold">${l.treatment} - ${l.branch}</div>
-          <div class="text-xs text-slate-300">الموعد المطلوب: ${l.time || 'غير محدد'}</div>
-          <div class="flex items-center gap-2 pt-2 border-t border-slate-800 text-xs">
-            <a href="https://wa.me/${l.phone.replace(/[^0-9]/g, '')}" target="_blank" class="flex-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white py-1.5 rounded-lg text-center font-bold transition-colors">
-              فتح الواتساب
-            </a>
-            <a href="tel:${l.phone}" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-bold">
-              اتصال
-            </a>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function clearLeads() {
@@ -286,7 +351,7 @@
       currentConfig.clinicNameAr = document.getElementById("cfg-clinic-name").value.trim();
       currentConfig.doctorName = document.getElementById("cfg-doctor-name").value.trim();
       currentConfig.doctorTitle = document.getElementById("cfg-doctor-title").value.trim();
-      currentConfig.whatsappNumber = document.getElementById("cfg-whatsapp").value.trim();
+      currentConfig.whatsappNumber = document.getElementById("cfg-whatsapp").value.trim().replace(/[^0-9]/g, '');
       currentConfig.adminPin = document.getElementById("cfg-admin-pin").value.trim();
       currentConfig.promo.active = document.getElementById("cfg-promo-active").checked;
       currentConfig.promo.text = document.getElementById("cfg-promo-text").value.trim();
