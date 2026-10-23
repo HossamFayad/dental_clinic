@@ -784,10 +784,13 @@
     let quizAnswers = { goal: '', pain: '', branch: '' };
 
     function escapeHtml(str) {
-      if (!str) return "";
-      const div = document.createElement("div");
-      div.textContent = str;
-      return div.innerHTML;
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -841,7 +844,7 @@
               <span class="text-[10px] text-slate-400 block font-semibold">التكلفة التقديرية</span>
               <span class="text-sm font-black text-navy-900">${escapeHtml(t.priceEstimate)}</span>
             </div>
-            <button onclick="openBookingModal('${escapeHtml(t.title)}')" class="bg-slate-100 hover:bg-brand-600 hover:text-white text-slate-800 font-bold text-xs px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
+            <button onclick="openBookingModal(this.getAttribute('data-treatment'))" data-treatment="${escapeHtml(t.title)}" class="bg-slate-100 hover:bg-brand-600 hover:text-white text-slate-800 font-bold text-xs px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
               <span>احجز الآن</span>
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
             </button>

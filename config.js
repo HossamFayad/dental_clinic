@@ -178,13 +178,34 @@ const DEFAULT_CLINIC_CONFIG = {
 };
 
 // ==========================================
-// Universal Declarative Config Engine
+// Universal Declarative Config Engine (Security Hardened)
 // ==========================================
 class ConfigEngine {
   constructor(storageKey, defaults) {
     this.storageKey = storageKey;
     this.defaults = defaults;
     this.data = this.load();
+  }
+
+  // Safe HTML Escaper: encodes all special characters to prevent DOM-based XSS
+  escape(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Safe URL sanitizer: prevents javascript: URI injection
+  sanitizeUrl(url) {
+    if (!url) return "#";
+    const trimmed = String(url).trim();
+    if (/^(https?:\/\/|\/|mailto:|tel:|data:image\/)/i.test(trimmed)) {
+      return trimmed;
+    }
+    return "#";
   }
 
   load() {
@@ -216,10 +237,13 @@ class ConfigEngine {
     return true;
   }
 
+  // Prototype Pollution Guarded Deep Merge
   deepMerge(target, source) {
     const output = Object.assign({}, target);
     if (this.isObject(target) && this.isObject(source)) {
       Object.keys(source).forEach(key => {
+        // Guard against prototype pollution
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
         if (this.isObject(source[key])) {
           if (!(key in target)) Object.assign(output, { [key]: source[key] });
           else output[key] = this.deepMerge(target[key], source[key]);
@@ -236,11 +260,12 @@ class ConfigEngine {
   }
 
   getCleanWhatsApp() {
-    return (this.data.whatsappNumber || "201000000000").replace(/[^0-9]/g, '');
+    return (this.data.whatsappNumber || "201000000000").toString().replace(/[^0-9]/g, '');
   }
 
   getDisplayPhone() {
-    return this.data.phoneDisplay || ("0" + this.getCleanWhatsApp().replace(/^20/, ''));
+    const raw = (this.data.phoneDisplay || "").toString().replace(/[^0-9+\s\-()]/g, '').trim();
+    return raw || ("0" + this.getCleanWhatsApp().replace(/^20/, ''));
   }
 
   getWhatsAppUrl(customMessage = "") {
@@ -250,17 +275,18 @@ class ConfigEngine {
       : `https://wa.me/${wa}`;
   }
 
-  // Declarative DOM Applier
+  // Declarative DOM Applier with Strict Sanitization
   apply() {
     const cleanWa = this.getCleanWhatsApp();
     const phone = this.getDisplayPhone();
+    const telHref = phone.replace(/[^0-9+]/g, '');
 
-    // 1. Phone Links: [data-bind-phone]
+    // 1. Phone Links: [data-bind-phone] -> strictly numbers and optional leading +
     document.querySelectorAll("[data-bind-phone]").forEach(el => {
-      el.setAttribute("href", `tel:${phone}`);
+      el.setAttribute("href", `tel:${telHref}`);
     });
 
-    // 2. Phone Display Text: [data-bind-phone-display]
+    // 2. Phone Display Text: [data-bind-phone-display] -> textContent prevents XSS
     document.querySelectorAll("[data-bind-phone-display]").forEach(el => {
       el.textContent = phone;
     });
@@ -271,7 +297,7 @@ class ConfigEngine {
       el.setAttribute("href", this.getWhatsAppUrl(msg));
     });
 
-    // 4. Text Bindings: [data-bind-text="doctorName"] or [data-bind-text="promo.text"]
+    // 4. Text Bindings: [data-bind-text] -> textContent prevents XSS
     document.querySelectorAll("[data-bind-text]").forEach(el => {
       const path = el.getAttribute("data-bind-text");
       const val = this.getByPath(this.data, path);
@@ -297,7 +323,7 @@ class ConfigEngine {
     });
   }
 
-  // Form Extractor for Admin: extracts values from [data-config-field="..."]
+  // Form Extractor for Admin: extracts values with strict validation
   extractFormData(formSelector) {
     const form = typeof formSelector === 'string' ? document.querySelector(formSelector) : formSelector;
     if (!form) return {};
@@ -310,9 +336,11 @@ class ConfigEngine {
       } else if (input.type === 'number') {
         val = Number(input.value);
       } else {
-        val = input.value.trim();
+        val = input.value.trim().slice(0, 300); // Storage DoS limit
         if (path === 'whatsappNumber') {
           val = val.replace(/[^0-9]/g, '');
+        } else if (path === 'phoneDisplay') {
+          val = val.replace(/[^0-9+\s\-()]/g, '');
         }
       }
       this.setByPath(result, path, val);
@@ -321,17 +349,25 @@ class ConfigEngine {
   }
 
   getByPath(obj, path) {
-    return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
+    const parts = path.split('.');
+    for (const part of parts) {
+      if (part === '__proto__' || part === 'constructor' || part === 'prototype') return undefined;
+    }
+    return parts.reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
   }
 
   setByPath(obj, path, value) {
     const parts = path.split('.');
     let current = obj;
     for (let i = 0; i < parts.length - 1; i++) {
-      if (!current[parts[i]]) current[parts[i]] = {};
-      current = current[parts[i]];
+      const part = parts[i];
+      if (part === '__proto__' || part === 'constructor' || part === 'prototype') return;
+      if (!current[part]) current[part] = {};
+      current = current[part];
     }
-    current[parts[parts.length - 1]] = value;
+    const last = parts[parts.length - 1];
+    if (last === '__proto__' || last === 'constructor' || last === 'prototype') return;
+    current[last] = value;
   }
 }
 
