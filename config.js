@@ -1,5 +1,5 @@
 // ==========================================
-// Elite Dental Clinic - Global Configuration
+// Elite Dental Clinic - Global Configuration & Declarative Engine
 // ==========================================
 
 const DEFAULT_CLINIC_CONFIG = {
@@ -48,7 +48,7 @@ const DEFAULT_CLINIC_CONFIG = {
       icon: "sparkles",
       shortDesc: "عدسات إيماكس الألمانية الأصلية فائقة النحافة والصلابة بدون برد جائر للأسنان مع محاكاة ثلاثية الأبعاد.",
       priceEstimate: "تبدأ من 3,500 ج للسن",
-      duration: "جلستان فقط (خلال 48 ساعة)",
+      duration: "جلستان فقط (خلال 3 إلى 5 أيام عمل)",
       warranty: "ضمان 10 سنوات معتمد",
       popular: true
     },
@@ -118,7 +118,7 @@ const DEFAULT_CLINIC_CONFIG = {
       category: "فينير هوليوود",
       beforeImg: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
       afterImg: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80",
-      notes: "تم تعديل اللون، سد الفراغات، وتناسق خط الابتسامة خلال 48 ساعة فقط."
+      notes: "تم تعديل اللون، سد الفراغات، وتناسق خط الابتسامة خلال جلستين متتاليتين."
     },
     {
       id: "case-2",
@@ -133,39 +133,35 @@ const DEFAULT_CLINIC_CONFIG = {
       id: "case-3",
       title: "تبييض ليزر Zoom 4 وعلاج تصبغات التدخين",
       patient: "تبييض عميق لمهندس 34 سنة",
-      category: "تبييض أسنان",
-      beforeImg: "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=800&q=80",
-      afterImg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-      notes: "تفتيح 7 درجات في جلسة واحدة مدتها 45 دقيقة بدون حساسية للأسنان."
+      category: "تبييض ليزر",
+      beforeImg: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
+      afterImg: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80",
+      notes: "تفتيح 7 درجات في جلسة واحدة مدتها 45 دقيقة بدون حساسية أسنان."
     }
   ],
 
-  // Calculator Treatment Options
-  calculatorData: {
-    treatments: [
-      { id: "veneer", name: "فينير عدسات E-Max ألماني", unitPrice: 3500, unitName: "سن" },
-      { id: "implant", name: "زراعة أسنان ألمانية / سويسرية", unitPrice: 8500, unitName: "غرسة" },
-      { id: "whitening", name: "جلسة تبييض ليزر Zoom 4 متكاملة", unitPrice: 2400, unitName: "جلسة" },
-      { id: "aligner", name: "تقويم شفاف غير مرئي (فك كامل)", unitPrice: 15000, unitName: "فك" },
-      { id: "zircon", name: "طربوش زيركون تجميلي عالي القوة", unitPrice: 2800, unitName: "طربوش" }
-    ],
-    installmentPartners: ["بنك مصر (بدون فوائد)", "البنك الأهلي المصري", "فاليو valU", "سهولة Souhoola"]
-  },
-
-  // Testimonials & Patient Reviews
+  // Patient Reviews & Social Proof
   reviews: [
     {
-      name: "م. كريم الشناوي",
+      name: "د. سارة المنشاوي",
       branch: "فرع التجمع الخامس",
-      treatment: "زراعة 3 أسنان وفينير",
+      treatment: "ابتسامة هوليوود (E-Max)",
       rating: 5,
       date: "منذ أسبوعين",
-      comment: "تجربة غيرت رأيي تماماً في دكاترة الأسنان! عملت زراعة لـ 3 ضروس بدون أي ألم يذكر وبأجهزة متطورة جداً. الدكتور بيشرح كل خطوة على الشاشة 3D والتعقيم فوق الممتاز."
+      comment: "تجربة ممتازة جداً، دكتور أحمد في قمة الذوق والاحترافية. النتيجة فاقت توقعاتي تماماً وشكل أسناني طبيعي 100% ومفيش أي ألم."
     },
     {
-      name: "د. سارة المنشاوي",
+      name: "م. كريم النجار",
       branch: "فرع الشيخ زايد",
-      treatment: "ابتسامة هوليوود E-Max",
+      treatment: "زراعة فورية لضرسين",
+      rating: 5,
+      date: "منذ 3 أسابيع",
+      comment: "كنت مرعوب من فكرة الزراعة، لكن والله العظيم ما حسيت بأي وجع وقت العملية ولا بعدها! الجلسة كلها أخدت ربع ساعة والتعقيم يطمن جداً."
+    },
+    {
+      name: "أ. نورهان الشربيني",
+      branch: "فرع التجمع الخامس",
+      treatment: "فينير وتبييض Zoom",
       rating: 5,
       date: "منذ شهر",
       comment: "كنت خايفة جداً من برد الأسنان بس د. أحمد طمني واستخدم عدسات إيماكس فائقة النحافة. النتيجة طبيعية جداً مش بيضاء طباشير زي الشغل التجاري، الكل بيسألني عن سر ابتسامتي!"
@@ -181,35 +177,169 @@ const DEFAULT_CLINIC_CONFIG = {
   ]
 };
 
-// Storage helper to load edited config or default
-function getClinicConfig() {
-  try {
-    const saved = localStorage.getItem("elite_dental_config");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return parsed;
+// ==========================================
+// Universal Declarative Config Engine
+// ==========================================
+class ConfigEngine {
+  constructor(storageKey, defaults) {
+    this.storageKey = storageKey;
+    this.defaults = defaults;
+    this.data = this.load();
+  }
+
+  load() {
+    try {
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) return this.deepMerge(this.defaults, JSON.parse(saved));
+    } catch (e) {
+      console.error("ConfigEngine load error:", e);
     }
-  } catch (e) {
-    console.error("Failed to load saved clinic config", e);
+    return JSON.parse(JSON.stringify(this.defaults));
   }
-  return DEFAULT_CLINIC_CONFIG;
-}
 
-function saveClinicConfig(newConfig) {
-  try {
-    localStorage.setItem("elite_dental_config", JSON.stringify(newConfig));
+  save(partial) {
+    this.data = this.deepMerge(this.data, partial);
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+      this.apply();
+      return true;
+    } catch (e) {
+      console.error("ConfigEngine save error:", e);
+      return false;
+    }
+  }
+
+  reset() {
+    localStorage.removeItem(this.storageKey);
+    this.data = JSON.parse(JSON.stringify(this.defaults));
+    this.apply();
     return true;
-  } catch (e) {
-    console.error("Failed to save clinic config", e);
-    return false;
+  }
+
+  deepMerge(target, source) {
+    const output = Object.assign({}, target);
+    if (this.isObject(target) && this.isObject(source)) {
+      Object.keys(source).forEach(key => {
+        if (this.isObject(source[key])) {
+          if (!(key in target)) Object.assign(output, { [key]: source[key] });
+          else output[key] = this.deepMerge(target[key], source[key]);
+        } else {
+          Object.assign(output, { [key]: source[key] });
+        }
+      });
+    }
+    return output;
+  }
+
+  isObject(item) {
+    return item && typeof item === 'object' && !Array.isArray(item);
+  }
+
+  getCleanWhatsApp() {
+    return (this.data.whatsappNumber || "201000000000").replace(/[^0-9]/g, '');
+  }
+
+  getDisplayPhone() {
+    return this.data.phoneDisplay || ("0" + this.getCleanWhatsApp().replace(/^20/, ''));
+  }
+
+  getWhatsAppUrl(customMessage = "") {
+    const wa = this.getCleanWhatsApp();
+    return customMessage 
+      ? `https://wa.me/${wa}?text=${encodeURIComponent(customMessage)}`
+      : `https://wa.me/${wa}`;
+  }
+
+  // Declarative DOM Applier
+  apply() {
+    const cleanWa = this.getCleanWhatsApp();
+    const phone = this.getDisplayPhone();
+
+    // 1. Phone Links: [data-bind-phone]
+    document.querySelectorAll("[data-bind-phone]").forEach(el => {
+      el.setAttribute("href", `tel:${phone}`);
+    });
+
+    // 2. Phone Display Text: [data-bind-phone-display]
+    document.querySelectorAll("[data-bind-phone-display]").forEach(el => {
+      el.textContent = phone;
+    });
+
+    // 3. WhatsApp Links: [data-bind-whatsapp]
+    document.querySelectorAll("[data-bind-whatsapp]").forEach(el => {
+      const msg = el.getAttribute("data-whatsapp-msg") || "";
+      el.setAttribute("href", this.getWhatsAppUrl(msg));
+    });
+
+    // 4. Text Bindings: [data-bind-text="doctorName"] or [data-bind-text="promo.text"]
+    document.querySelectorAll("[data-bind-text]").forEach(el => {
+      const path = el.getAttribute("data-bind-text");
+      const val = this.getByPath(this.data, path);
+      if (val !== undefined && val !== null) {
+        el.textContent = val;
+      }
+    });
+  }
+
+  // Form Binding for Admin: auto-populates [data-config-field="..."]
+  populateForm(formSelector) {
+    const form = typeof formSelector === 'string' ? document.querySelector(formSelector) : formSelector;
+    if (!form) return;
+    form.querySelectorAll("[data-config-field]").forEach(input => {
+      const path = input.getAttribute("data-config-field");
+      const val = this.getByPath(this.data, path);
+      if (val === undefined || val === null) return;
+      if (input.type === 'checkbox') {
+        input.checked = !!val;
+      } else {
+        input.value = val;
+      }
+    });
+  }
+
+  // Form Extractor for Admin: extracts values from [data-config-field="..."]
+  extractFormData(formSelector) {
+    const form = typeof formSelector === 'string' ? document.querySelector(formSelector) : formSelector;
+    if (!form) return {};
+    const result = {};
+    form.querySelectorAll("[data-config-field]").forEach(input => {
+      const path = input.getAttribute("data-config-field");
+      let val;
+      if (input.type === 'checkbox') {
+        val = input.checked;
+      } else if (input.type === 'number') {
+        val = Number(input.value);
+      } else {
+        val = input.value.trim();
+        if (path === 'whatsappNumber') {
+          val = val.replace(/[^0-9]/g, '');
+        }
+      }
+      this.setByPath(result, path, val);
+    });
+    return result;
+  }
+
+  getByPath(obj, path) {
+    return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
+  }
+
+  setByPath(obj, path, value) {
+    const parts = path.split('.');
+    let current = obj;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!current[parts[i]]) current[parts[i]] = {};
+      current = current[parts[i]];
+    }
+    current[parts[parts.length - 1]] = value;
   }
 }
 
-// Global expose
-window.ClinicConfig = getClinicConfig();
-window.saveClinicConfig = saveClinicConfig;
-window.resetClinicConfig = function() {
-  localStorage.removeItem("elite_dental_config");
-  window.ClinicConfig = DEFAULT_CLINIC_CONFIG;
-  return true;
-};
+// Global Singleton Instance
+window.AppConfig = new ConfigEngine("elite_dental_config", DEFAULT_CLINIC_CONFIG);
+window.ClinicConfig = window.AppConfig.data;
+
+// Compatibility aliases
+function getClinicConfig() { return window.AppConfig.data; }
+function saveClinicConfig(cfg) { return window.AppConfig.save(cfg); }
+function resetClinicConfig() { return window.AppConfig.reset(); }

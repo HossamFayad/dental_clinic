@@ -121,37 +121,37 @@
             </div>
           </div>
 
-          <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+          <form id="settings-form" onsubmit="handleSaveSettings(event)" class="space-y-4">
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">اسم العيادة:</label>
-                <input type="text" id="cfg-clinic-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                <input type="text" data-config-field="clinicNameAr" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">اسم الطبيب الرئيسي:</label>
-                <input type="text" id="cfg-doctor-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                <input type="text" data-config-field="doctorName" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">رقم واتساب الحجوزات (مع كود الدولة):</label>
-                <input type="text" id="cfg-whatsapp" placeholder="مثال: 201000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-emerald-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
+                <input type="text" data-config-field="whatsappNumber" placeholder="مثال: 201000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-emerald-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">رقم الاتصال المعروض (Display Phone):</label>
-                <input type="text" id="cfg-phone-display" placeholder="مثال: 01000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-teal-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
+                <input type="text" data-config-field="phoneDisplay" placeholder="مثال: 01000000000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-teal-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">الرمز السري للوحة التحكم (PIN):</label>
-                <input type="text" id="cfg-admin-pin" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-amber-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
+                <input type="text" data-config-field="adminPin" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-amber-400 focus:ring-2 focus:ring-teal-500 focus:outline-none" dir="ltr">
               </div>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">لقب الطبيب والشهادات:</label>
-              <input type="text" id="cfg-doctor-title" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
+              <input type="text" data-config-field="doctorTitle" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
             </div>
 
             <!-- Promo Banner Config -->
@@ -161,11 +161,11 @@
                   <i data-lucide="tag" class="w-4 h-4"></i> شريط العروض والخصومات العلوي
                 </span>
                 <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                  <input type="checkbox" id="cfg-promo-active" class="accent-teal-500 rounded">
+                  <input type="checkbox" data-config-field="promo.active" class="accent-teal-500 rounded">
                   <span>تفعيل الشريط</span>
                 </label>
               </div>
-              <input type="text" id="cfg-promo-text" placeholder="نص العرض الترويجي..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200">
+              <input type="text" data-config-field="promo.text" placeholder="نص العرض الترويجي..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200">
             </div>
 
             <div class="pt-2 flex items-center gap-4">
@@ -227,7 +227,7 @@
       if (isLockedOut) return;
 
       const enteredPin = document.getElementById("pin-input").value.trim();
-      if (enteredPin === currentConfig.adminPin) {
+      if (enteredPin === window.AppConfig.data.adminPin) {
         failedAttempts = 0;
         document.getElementById("login-screen").classList.add("hidden");
         document.getElementById("admin-dashboard").classList.remove("hidden");
@@ -278,17 +278,11 @@
     }
 
     function initDashboard() {
-      document.getElementById("cfg-clinic-name").value = currentConfig.clinicNameAr || "";
-      document.getElementById("cfg-doctor-name").value = currentConfig.doctorName || "";
-      document.getElementById("cfg-doctor-title").value = currentConfig.doctorTitle || "";
-      document.getElementById("cfg-whatsapp").value = currentConfig.whatsappNumber || "";
-      document.getElementById("cfg-phone-display").value = currentConfig.phoneDisplay || "";
-      document.getElementById("cfg-admin-pin").value = currentConfig.adminPin || "";
-      document.getElementById("cfg-promo-active").checked = !!currentConfig.promo.active;
-      document.getElementById("cfg-promo-text").value = currentConfig.promo.text || "";
+      window.AppConfig.populateForm("#settings-form");
 
-      document.getElementById("stat-whatsapp-display").textContent = currentConfig.whatsappNumber ? `+${currentConfig.whatsappNumber}` : "+20 100 000 0000";
-      document.getElementById("stat-promo-status").textContent = currentConfig.promo.active ? `نشط (${currentConfig.promo.discountPercent || 25}%)` : "معطل";
+      const cfg = window.AppConfig.data;
+      document.getElementById("stat-whatsapp-display").textContent = cfg.whatsappNumber ? `+${cfg.whatsappNumber}` : "+20 100 000 0000";
+      document.getElementById("stat-promo-status").textContent = cfg.promo.active ? `نشط (${cfg.promo.discountPercent || 25}%)` : "معطل";
 
       loadLeads();
       lucide.createIcons();
@@ -353,16 +347,9 @@
 
     function handleSaveSettings(e) {
       e.preventDefault();
-      currentConfig.clinicNameAr = document.getElementById("cfg-clinic-name").value.trim();
-      currentConfig.doctorName = document.getElementById("cfg-doctor-name").value.trim();
-      currentConfig.doctorTitle = document.getElementById("cfg-doctor-title").value.trim();
-      currentConfig.whatsappNumber = document.getElementById("cfg-whatsapp").value.trim().replace(/[^0-9]/g, '');
-      currentConfig.phoneDisplay = document.getElementById("cfg-phone-display").value.trim();
-      currentConfig.adminPin = document.getElementById("cfg-admin-pin").value.trim();
-      currentConfig.promo.active = document.getElementById("cfg-promo-active").checked;
-      currentConfig.promo.text = document.getElementById("cfg-promo-text").value.trim();
+      const updated = window.AppConfig.extractFormData("#settings-form");
 
-      if (window.saveClinicConfig(currentConfig)) {
+      if (window.AppConfig.save(updated)) {
         alert("✅ تم حفظ التعديلات بنجاح وستظهر في الموقع فوراً!");
         initDashboard();
       } else {
@@ -372,8 +359,7 @@
 
     function handleResetDefaults() {
       if (confirm("هل تريد استعادة الإعدادات الافتراضية للعيادة؟")) {
-        window.resetClinicConfig();
-        currentConfig = window.ClinicConfig;
+        window.AppConfig.reset();
         initDashboard();
         alert("تمت استعادة الإعدادات الافتراضية بنجاح.");
       }
